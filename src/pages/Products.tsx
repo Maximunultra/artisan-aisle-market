@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -15,7 +14,8 @@ const products = [
     price: 1200,
     image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&q=80&w=600&h=700",
     artisan: "Maria Santos",
-    featured: true
+    featured: true,
+    isEcoFriendly: true
   },
   {
     id: 2,
@@ -24,7 +24,8 @@ const products = [
     price: 1850,
     image: "https://images.unsplash.com/photo-1612196808214-b7e69439cdba?auto=format&fit=crop&q=80&w=600&h=700",
     artisan: "Pedro Reyes",
-    featured: true
+    featured: true,
+    isEcoFriendly: false
   },
   {
     id: 3,
@@ -156,7 +157,7 @@ const Products = () => {
           return b.price - a.price;
         case "featured":
         default:
-          return b.featured - a.featured;
+          return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
       }
     });
     
@@ -289,6 +290,13 @@ const Products = () => {
                       alt={product.name} 
                       className="w-full h-full object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
                     />
+                    
+                    {/* Eco-Friendly Badge */}
+                    {product.isEcoFriendly && (
+                      <div className="absolute top-3 left-3 bg-green-500 text-white text-xs font-medium px-2 py-1 rounded-full">
+                        Eco-Friendly
+                      </div>
+                    )}
                     
                     {/* Quick Actions Overlay */}
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
