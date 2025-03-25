@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Eye, EyeOff, Mail, User, Phone, MapPin, Lock } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -22,7 +24,12 @@ const userFormSchema = z.object({
   }),
   password: z.string().min(8, {
     message: "Password must be at least 8 characters.",
-  }),
+  }).regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+    {
+      message: "Password must include uppercase, lowercase, number and special character.",
+    }
+  ),
   confirmPassword: z.string(),
   phoneNumber: z.string().min(10, {
     message: "Please enter a valid phone number.",
@@ -31,6 +38,9 @@ const userFormSchema = z.object({
     message: "Address is required.",
   }),
   userType: z.enum(["buyer", "artisan"]),
+  termsAccepted: z.literal(true, {
+    errorMap: () => ({ message: "You must accept the terms and conditions." }),
+  }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -41,6 +51,10 @@ type UserFormValues = z.infer<typeof userFormSchema>;
 const SignUp = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [userType, setUserType] = useState<"buyer" | "artisan">("buyer");
+  
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
@@ -51,6 +65,7 @@ const SignUp = () => {
       phoneNumber: "",
       address: "",
       userType: "buyer",
+      termsAccepted: false,
     },
   });
 
@@ -68,10 +83,17 @@ const SignUp = () => {
     }, 1500);
   };
 
+  const handleTabChange = (value: string) => {
+    if (value === "buyer" || value === "artisan") {
+      setUserType(value);
+      form.setValue("userType", value);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-grow pt-20 pb-12">
+      <main className="flex-grow pt-20 pb-12 bg-[#FCFAF7]">
         <div className="max-w-lg mx-auto px-4">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-serif font-bold mb-2">Create Account</h1>
@@ -80,7 +102,11 @@ const SignUp = () => {
             </p>
           </div>
 
-          <Tabs defaultValue="buyer" className="w-full mb-6">
+          <Tabs 
+            defaultValue="buyer" 
+            className="w-full mb-6"
+            onValueChange={handleTabChange}
+          >
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="buyer">Buyer</TabsTrigger>
               <TabsTrigger value="artisan">Artisan</TabsTrigger>
@@ -109,18 +135,21 @@ const SignUp = () => {
             </TabsContent>
           </Tabs>
 
-          <div className="bg-white shadow-sm rounded-lg p-6 border border-artisan-sand/50">
+          <div className="bg-white shadow-md rounded-lg p-8 border border-artisan-sand/30">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                 <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Full Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter your full name" {...field} />
-                      </FormControl>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                        <FormControl>
+                          <Input placeholder="Enter your full name" className="pl-10" {...field} />
+                        </FormControl>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -132,9 +161,12 @@ const SignUp = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input placeholder="you@example.com" type="email" {...field} />
-                      </FormControl>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                        <FormControl>
+                          <Input placeholder="you@example.com" type="email" className="pl-10" {...field} />
+                        </FormControl>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -147,9 +179,27 @@ const SignUp = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Create a password" type="password" {...field} />
-                        </FormControl>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                          <FormControl>
+                            <Input 
+                              placeholder="Create a password" 
+                              type={showPassword ? "text" : "password"} 
+                              className="pl-10 pr-10" 
+                              {...field} 
+                            />
+                          </FormControl>
+                          <button
+                            type="button"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? 
+                              <EyeOff className="h-4 w-4" /> : 
+                              <Eye className="h-4 w-4" />
+                            }
+                          </button>
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -161,9 +211,27 @@ const SignUp = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Confirm Password</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Confirm your password" type="password" {...field} />
-                        </FormControl>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                          <FormControl>
+                            <Input 
+                              placeholder="Confirm your password" 
+                              type={showConfirmPassword ? "text" : "password"} 
+                              className="pl-10 pr-10" 
+                              {...field} 
+                            />
+                          </FormControl>
+                          <button
+                            type="button"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          >
+                            {showConfirmPassword ? 
+                              <EyeOff className="h-4 w-4" /> : 
+                              <Eye className="h-4 w-4" />
+                            }
+                          </button>
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -176,9 +244,12 @@ const SignUp = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Phone Number</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter your phone number" {...field} />
-                      </FormControl>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                        <FormControl>
+                          <Input placeholder="Enter your phone number" className="pl-10" {...field} />
+                        </FormControl>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -190,9 +261,12 @@ const SignUp = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Address (in Legazpi City)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter your address" {...field} />
-                      </FormControl>
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                        <FormControl>
+                          <Input placeholder="Enter your address" className="pl-10" {...field} />
+                        </FormControl>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -209,6 +283,7 @@ const SignUp = () => {
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                           className="flex flex-col space-y-1"
+                          value={field.value}
                         >
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
@@ -229,6 +304,33 @@ const SignUp = () => {
                         </RadioGroup>
                       </FormControl>
                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="termsAccepted"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-4">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel className="text-sm font-normal">
+                          I agree to the{" "}
+                          <Link to="#" className="text-artisan-accent hover:underline">
+                            terms of service
+                          </Link>
+                          {" "}and{" "}
+                          <Link to="#" className="text-artisan-accent hover:underline">
+                            privacy policy
+                          </Link>
+                        </FormLabel>
+                      </div>
                     </FormItem>
                   )}
                 />
