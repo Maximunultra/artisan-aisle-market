@@ -38,8 +38,8 @@ const userFormSchema = z.object({
     message: "Address is required.",
   }),
   userType: z.enum(["buyer", "artisan"]),
-  termsAccepted: z.literal(true, {
-    errorMap: () => ({ message: "You must accept the terms and conditions." }),
+  termsAccepted: z.boolean().refine(val => val === true, {
+    message: "You must accept the terms and conditions.",
   }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
