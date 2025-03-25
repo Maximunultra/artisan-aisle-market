@@ -1,9 +1,12 @@
+
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Chatbot from '@/components/Chatbot';
 import { Button } from "@/components/ui/button";
 import { Search, ShoppingCart, Filter, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
+import { CartItem } from "@/types/CartItem";
 
 // Sample products data (expanded)
 const products = [
@@ -137,6 +140,7 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("featured");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const { toast } = useToast();
   
   // Filter and sort products
   const filteredProducts = products
@@ -164,6 +168,39 @@ const Products = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  
+  const addToCart = (product: any) => {
+    // Get existing cart items from localStorage
+    const existingCart = localStorage.getItem('cart');
+    const cartItems: CartItem[] = existingCart ? JSON.parse(existingCart) : [];
+    
+    // Check if item already exists in cart
+    const existingItemIndex = cartItems.findIndex(item => item.id === product.id);
+    
+    if (existingItemIndex >= 0) {
+      // Update quantity if item exists
+      cartItems[existingItemIndex].quantity += 1;
+    } else {
+      // Add new item to cart
+      cartItems.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        artisan: product.artisan,
+        quantity: 1
+      });
+    }
+    
+    // Save updated cart to localStorage
+    localStorage.setItem('cart', JSON.stringify(cartItems));
+    
+    // Show success toast
+    toast({
+      title: "Added to cart",
+      description: `${product.name} has been added to your cart.`,
+    });
+  };
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -300,7 +337,13 @@ const Products = () => {
                     
                     {/* Quick Actions Overlay */}
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                      <Button className="bg-white text-artisan-stone hover:bg-artisan-cream">
+                      <Button 
+                        className="bg-white text-artisan-stone hover:bg-artisan-cream"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          addToCart(product);
+                        }}
+                      >
                         <ShoppingCart className="mr-2 h-4 w-4" />
                         Add to Cart
                       </Button>

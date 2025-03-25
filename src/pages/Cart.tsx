@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -7,30 +7,24 @@ import Chatbot from '@/components/Chatbot';
 import { Button } from "@/components/ui/button";
 import { MinusCircle, PlusCircle, Trash2, ChevronRight, ShoppingBag } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-
-// Sample cart items
-const initialCartItems = [
-  {
-    id: 1,
-    name: "Hand-woven Abaca Bag",
-    price: 1200,
-    image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&q=80&w=600&h=700",
-    artisan: "Maria Santos",
-    quantity: 1,
-  },
-  {
-    id: 2,
-    name: "Ceramic Vase with Bicol Patterns",
-    price: 1850,
-    image: "https://images.unsplash.com/photo-1612196808214-b7e69439cdba?auto=format&fit=crop&q=80&w=600&h=700",
-    artisan: "Pedro Reyes",
-    quantity: 2,
-  }
-];
+import { CartItem } from "@/types/CartItem";
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState(initialCartItems);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const { toast } = useToast();
+  
+  // Load cart items from localStorage on component mount
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      setCartItems(JSON.parse(savedCart));
+    }
+  }, []);
+  
+  // Save cart items to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cartItems));
+  }, [cartItems]);
   
   const updateItemQuantity = (id: number, change: number) => {
     setCartItems(prevItems => 
@@ -61,10 +55,8 @@ const Cart = () => {
   const handleCheckout = () => {
     toast({
       title: "Processing checkout",
-      description: "Redirecting to payment options...",
+      description: "Redirecting to checkout page...",
     });
-    // In a real application, this would navigate to checkout page
-    console.log("Proceeding to checkout", cartItems);
   };
   
   return (
@@ -177,12 +169,14 @@ const Cart = () => {
                     </div>
                   </div>
                   
-                  <Button 
-                    className="w-full bg-artisan-stone hover:bg-artisan-forest"
-                    onClick={handleCheckout}
-                  >
-                    Proceed to Checkout
-                  </Button>
+                  <Link to="/checkout">
+                    <Button 
+                      className="w-full bg-artisan-stone hover:bg-artisan-forest"
+                      onClick={handleCheckout}
+                    >
+                      Proceed to Checkout
+                    </Button>
+                  </Link>
                   
                   <div className="mt-4 text-xs text-muted-foreground">
                     <p>Delivery is available only within Legazpi City.</p>

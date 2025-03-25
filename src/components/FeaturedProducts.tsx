@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { ChevronRight, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useToast } from "@/hooks/use-toast";
+import { CartItem } from "@/types/CartItem";
 
 // Sample product data
 const products = [
@@ -45,10 +47,44 @@ const categories = ["All", "Accessories", "Home Decor", "Kitchen", "Clothing"];
 
 const FeaturedProducts = () => {
   const [activeCategory, setActiveCategory] = useState("All");
+  const { toast } = useToast();
   
   const filteredProducts = activeCategory === "All" 
     ? products 
     : products.filter(product => product.category === activeCategory);
+  
+  const addToCart = (product: any) => {
+    // Get existing cart items from localStorage
+    const existingCart = localStorage.getItem('cart');
+    const cartItems: CartItem[] = existingCart ? JSON.parse(existingCart) : [];
+    
+    // Check if item already exists in cart
+    const existingItemIndex = cartItems.findIndex(item => item.id === product.id);
+    
+    if (existingItemIndex >= 0) {
+      // Update quantity if item exists
+      cartItems[existingItemIndex].quantity += 1;
+    } else {
+      // Add new item to cart
+      cartItems.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        artisan: product.artisan,
+        quantity: 1
+      });
+    }
+    
+    // Save updated cart to localStorage
+    localStorage.setItem('cart', JSON.stringify(cartItems));
+    
+    // Show success toast
+    toast({
+      title: "Added to cart",
+      description: `${product.name} has been added to your cart.`,
+    });
+  };
   
   return (
     <section id="featured-products" className="section-spacing bg-white">
@@ -100,7 +136,13 @@ const FeaturedProducts = () => {
                 
                 {/* Quick Actions Overlay */}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <Button className="bg-white text-artisan-stone hover:bg-artisan-cream">
+                  <Button 
+                    className="bg-white text-artisan-stone hover:bg-artisan-cream"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      addToCart(product);
+                    }}
+                  >
                     <ShoppingCart className="mr-2 h-4 w-4" />
                     Add to Cart
                   </Button>
