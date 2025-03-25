@@ -10,6 +10,7 @@ import SignUpPage from './pages/SignUp';
 import ForgotPasswordPage from './pages/ForgotPassword';
 import NotFoundPage from './pages/NotFound';
 import DashboardPage from './pages/Dashboard';
+import ArtisanDashboard from './pages/ArtisanDashboard';
 import { Toaster } from "@/components/ui/toaster";
 import { useEffect } from 'react';
 import './App.css';
@@ -31,6 +32,7 @@ function App() {
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/artisan-dashboard" element={<ArtisanDashboard />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <Toaster />
