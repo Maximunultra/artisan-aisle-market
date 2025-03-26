@@ -4,12 +4,13 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Search, Package, Users, CreditCard, Megaphone, PlusCircle, Edit, Trash2, ChevronRight } from 'lucide-react';
+import { Search, Package, Users, CreditCard, Megaphone, PlusCircle, Edit, Trash2, ChevronRight, BarChart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ArtisanProducts from '@/components/ArtisanProducts';
 import ArtisanPromotions from '@/components/ArtisanPromotions';
 import ArtisanMessages from '@/components/ArtisanMessages';
 import ArtisanOrders from '@/components/ArtisanOrders';
+import ArtisanAnalytics from '@/components/ArtisanAnalytics';
 
 const ArtisanDashboard = () => {
   const [activeTab, setActiveTab] = useState("products");
@@ -32,7 +33,7 @@ const ArtisanDashboard = () => {
             onValueChange={setActiveTab}
             className="space-y-6"
           >
-            <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full gap-2">
+            <TabsList className="grid grid-cols-2 md:grid-cols-5 w-full gap-2">
               <TabsTrigger value="products" className="flex items-center gap-2">
                 <Package size={16} />
                 <span>Products</span>
@@ -48,6 +49,10 @@ const ArtisanDashboard = () => {
               <TabsTrigger value="messages" className="flex items-center gap-2">
                 <Users size={16} />
                 <span>Messages</span>
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="flex items-center gap-2">
+                <BarChart size={16} />
+                <span>Analytics</span>
               </TabsTrigger>
             </TabsList>
             
@@ -69,6 +74,11 @@ const ArtisanDashboard = () => {
             {/* Messages Tab */}
             <TabsContent value="messages">
               <ArtisanMessages />
+            </TabsContent>
+            
+            {/* Analytics Tab */}
+            <TabsContent value="analytics">
+              <ArtisanAnalytics />
             </TabsContent>
           </Tabs>
         </div>
