@@ -11,8 +11,25 @@ import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 
+// Define types for the eco request
+interface EcoRequest {
+  id: number;
+  productName: string;
+  artisanName: string;
+  artisanId: number;
+  materials: string;
+  description: string;
+  certifications: string;
+  status: 'pending' | 'approved' | 'rejected';
+  submittedDate: string;
+  imageUrl: string;
+  approvedDate?: string;
+  rejectedDate?: string;
+  rejectionReason?: string;
+}
+
 // Sample eco-friendly product requests
-const SAMPLE_ECO_REQUESTS = [
+const SAMPLE_ECO_REQUESTS: EcoRequest[] = [
   {
     id: 1,
     productName: "Hand-woven Abaca Bag",
@@ -35,7 +52,7 @@ const SAMPLE_ECO_REQUESTS = [
     certifications: "None yet, seeking approval",
     status: "pending",
     submittedDate: "2023-05-05",
-    imageUrl: "https://images.unsplash.com/photo-1589923188651-268a9765e432?auto=format&fit=crop&q=80&w=600&h=700"
+    imageUrl: "https://images.unsplash.com/photo-1589923188651-268a9765a432?auto=format&fit=crop&q=80&w=600&h=700"
   },
   {
     id: 3,
@@ -67,9 +84,9 @@ const SAMPLE_ECO_REQUESTS = [
 ];
 
 export const AdminEcoFriendlyApprovals = () => {
-  const [ecoRequests, setEcoRequests] = useState(SAMPLE_ECO_REQUESTS);
+  const [ecoRequests, setEcoRequests] = useState<EcoRequest[]>(SAMPLE_ECO_REQUESTS);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedRequest, setSelectedRequest] = useState<any>(null);
+  const [selectedRequest, setSelectedRequest] = useState<EcoRequest | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
   const { toast } = useToast();
   
@@ -83,7 +100,7 @@ export const AdminEcoFriendlyApprovals = () => {
     const updatedRequests = ecoRequests.map(request => 
       request.id === id ? {
         ...request, 
-        status: 'approved',
+        status: 'approved' as const,
         approvedDate: new Date().toISOString().split('T')[0]
       } : request
     );
@@ -102,7 +119,7 @@ export const AdminEcoFriendlyApprovals = () => {
     const updatedRequests = ecoRequests.map(request => 
       request.id === id ? {
         ...request, 
-        status: 'rejected',
+        status: 'rejected' as const,
         rejectedDate: new Date().toISOString().split('T')[0],
         rejectionReason: reason
       } : request
