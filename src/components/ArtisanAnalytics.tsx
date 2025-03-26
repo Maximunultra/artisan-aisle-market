@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   ChartContainer, 
@@ -26,7 +25,14 @@ import {
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis,
-  Radar
+  Radar,
+  ScatterChart,
+  Scatter,
+  ComposedChart,
+  Treemap,
+  FunnelChart,
+  Funnel,
+  LabelList
 } from "recharts";
 import { Package, Users, CreditCard, TrendingUp, Calendar, ShoppingBag, Target } from 'lucide-react';
 import { 
@@ -54,7 +60,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Sample data for the analytics
 const productSalesData = [
   { name: 'Hand-woven Abaca Bag', sales: 12, stock: 5, revenue: 14400 },
   { name: 'Ceramic Vase', sales: 8, stock: 8, revenue: 14800 },
@@ -87,6 +92,43 @@ const weekdaySalesData = [
   { name: 'Sat', sales: 24 },
   { name: 'Sun', sales: 16 },
 ];
+
+const customerAgeData = [
+  { name: '18-24', value: 15 },
+  { name: '25-34', value: 35 },
+  { name: '35-44', value: 25 },
+  { name: '45-54', value: 15 },
+  { name: '55+', value: 10 },
+];
+
+const salesChannelData = [
+  { name: 'Online Store', value: 45 },
+  { name: 'Marketplace', value: 30 },
+  { name: 'Social Media', value: 15 },
+  { name: 'In Person', value: 10 },
+];
+
+const customerJourneyData = [
+  { name: 'Visitors', value: 100 },
+  { name: 'Product Views', value: 70 },
+  { name: 'Add to Cart', value: 40 },
+  { name: 'Purchase', value: 20 },
+];
+
+const regionSalesData = [
+  { name: 'North', sales: 15, revenue: 18000 },
+  { name: 'South', sales: 20, revenue: 24000 },
+  { name: 'East', sales: 12, revenue: 14400 },
+  { name: 'West', sales: 18, revenue: 21600 },
+  { name: 'Central', sales: 25, revenue: 30000 },
+];
+
+const productCostProfitData = productSalesData.map(product => ({
+  name: product.name,
+  cost: Math.floor(product.revenue * 0.6),
+  profit: Math.floor(product.revenue * 0.4),
+  revenue: product.revenue
+}));
 
 const productPerformanceData = productSalesData.map(item => ({
   subject: item.name,
@@ -174,13 +216,26 @@ const chartConfig = {
       dark: "#10B981",
     },
   },
+  cost: {
+    label: "Cost",
+    theme: {
+      light: "#EF4444",
+      dark: "#EF4444",
+    },
+  },
+  profit: {
+    label: "Profit",
+    theme: {
+      light: "#22C55E",
+      dark: "#22C55E",
+    },
+  },
 };
 
 const ArtisanAnalytics = () => {
   const [analyticView, setAnalyticView] = useState("overview");
   const [dataLoading, setDataLoading] = useState(false);
   
-  // Calculate overall statistics
   const totalSales = productSalesData.reduce((sum, product) => sum + product.sales, 0);
   const totalRevenue = productSalesData.reduce((sum, product) => sum + product.revenue, 0);
   const totalStock = productSalesData.reduce((sum, product) => sum + product.stock, 0);
@@ -201,7 +256,6 @@ const ArtisanAnalytics = () => {
         </Tabs>
       </div>
       
-      {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard 
           title="Total Sales" 
@@ -233,7 +287,6 @@ const ArtisanAnalytics = () => {
       </div>
       
       <TabsContent value="overview" className="space-y-6">
-        {/* Monthly Sales Trend */}
         <Card>
           <CardHeader>
             <CardTitle>Monthly Sales Trend</CardTitle>
@@ -285,7 +338,6 @@ const ArtisanAnalytics = () => {
           </CardContent>
         </Card>
         
-        {/* Table of products */}
         <Card>
           <CardHeader>
             <CardTitle>Product Performance</CardTitle>
@@ -296,7 +348,6 @@ const ArtisanAnalytics = () => {
           </CardContent>
         </Card>
         
-        {/* Weekly Sales Distribution */}
         <Card>
           <CardHeader>
             <CardTitle>Weekly Sales Distribution</CardTitle>
@@ -319,10 +370,34 @@ const ArtisanAnalytics = () => {
             )}
           </CardContent>
         </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Cost & Profit Analysis</CardTitle>
+            <CardDescription>Financial breakdown by product</CardDescription>
+          </CardHeader>
+          <CardContent className="px-2">
+            {dataLoading ? (
+              <Skeleton className="h-[300px] w-full" />
+            ) : (
+              <ChartContainer config={chartConfig} className="h-[300px]">
+                <ComposedChart data={productCostProfitData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar dataKey="cost" name="cost" stackId="a" fill="var(--color-cost)" />
+                  <Bar dataKey="profit" name="profit" stackId="a" fill="var(--color-profit)" />
+                  <Line dataKey="revenue" name="revenue" stroke="var(--color-revenue)" />
+                  <ChartLegend />
+                </ComposedChart>
+              </ChartContainer>
+            )}
+          </CardContent>
+        </Card>
       </TabsContent>
       
       <TabsContent value="products" className="space-y-6">
-        {/* Product Sales Comparison */}
         <Card>
           <CardHeader>
             <CardTitle>Product Sales Comparison</CardTitle>
@@ -346,7 +421,6 @@ const ArtisanAnalytics = () => {
           </CardContent>
         </Card>
         
-        {/* Product Stock Levels */}
         <Card>
           <CardHeader>
             <CardTitle>Product Stock Levels</CardTitle>
@@ -377,7 +451,71 @@ const ArtisanAnalytics = () => {
           )}
         </Card>
         
-        {/* Product Performance Radar */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Product Revenue Share</CardTitle>
+            <CardDescription>Visual representation of each product's revenue contribution</CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center">
+            {dataLoading ? (
+              <Skeleton className="h-[300px] w-full" />
+            ) : (
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <Treemap
+                    data={productSalesData}
+                    dataKey="revenue"
+                    ratio={4/3}
+                    stroke="#fff"
+                    fill="#8884d8"
+                    content={({ root, depth, x, y, width, height, index, payload, colors, rank, name }) => {
+                      return (
+                        <g>
+                          <rect
+                            x={x}
+                            y={y}
+                            width={width}
+                            height={height}
+                            style={{
+                              fill: COLORS[index % COLORS.length],
+                              stroke: '#fff',
+                              strokeWidth: 2 / (depth + 1e-10),
+                              strokeOpacity: 1 / (depth + 1e-10),
+                            }}
+                          />
+                          {width > 30 && height > 30 && (
+                            <text
+                              x={x + width / 2}
+                              y={y + height / 2 + 7}
+                              textAnchor="middle"
+                              fill="#fff"
+                              fontSize={12}
+                            >
+                              {payload.name}
+                            </text>
+                          )}
+                          {width > 30 && height > 30 && (
+                            <text
+                              x={x + width / 2}
+                              y={y + height / 2 - 7}
+                              textAnchor="middle"
+                              fill="#fff"
+                              fontSize={14}
+                              fontWeight="bold"
+                            >
+                              ₱{payload.revenue.toLocaleString()}
+                            </text>
+                          )}
+                        </g>
+                      );
+                    }}
+                  />
+                </ResponsiveContainer>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        
         <Card>
           <CardHeader>
             <CardTitle>Product Performance Overview</CardTitle>
@@ -406,7 +544,6 @@ const ArtisanAnalytics = () => {
       </TabsContent>
       
       <TabsContent value="customers" className="space-y-6">
-        {/* Customer Type Distribution */}
         <Card>
           <CardHeader>
             <CardTitle>Customer Segments</CardTitle>
@@ -441,7 +578,85 @@ const ArtisanAnalytics = () => {
           </CardContent>
         </Card>
         
-        {/* Store Visits vs Sales */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Customer Age Distribution</CardTitle>
+            <CardDescription>Age breakdown of your customer base</CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center">
+            {dataLoading ? (
+              <Skeleton className="h-[300px] w-[300px]" />
+            ) : (
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={customerAgeData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={90}
+                      fill="#8884d8"
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {customerAgeData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                      <LabelList dataKey="name" position="outside" />
+                    </Pie>
+                    <ChartTooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Customer Journey</CardTitle>
+            <CardDescription>Conversion funnel from visits to purchase</CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center">
+            {dataLoading ? (
+              <Skeleton className="h-[300px] w-full" />
+            ) : (
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <FunnelChart>
+                    <Tooltip />
+                    <Funnel
+                      dataKey="value"
+                      data={customerJourneyData}
+                      isAnimationActive
+                    >
+                      <LabelList
+                        position="right"
+                        fill="#000"
+                        stroke="none"
+                        dataKey="name"
+                      />
+                      <LabelList
+                        position="left"
+                        fill="#000"
+                        stroke="none"
+                        dataKey="value"
+                      />
+                      {
+                        customerJourneyData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))
+                      }
+                    </Funnel>
+                  </FunnelChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        
         <Card>
           <CardHeader>
             <CardTitle>Store Visits vs Sales</CardTitle>
@@ -481,7 +696,6 @@ const ArtisanAnalytics = () => {
           </CardContent>
         </Card>
         
-        {/* Customer Insights */}
         <Card>
           <CardHeader>
             <CardTitle>Customer Insights</CardTitle>
@@ -511,7 +725,6 @@ const ArtisanAnalytics = () => {
       </TabsContent>
       
       <TabsContent value="trends" className="space-y-6">
-        {/* Revenue Trend */}
         <Card>
           <CardHeader>
             <CardTitle>Revenue Trend</CardTitle>
@@ -541,7 +754,66 @@ const ArtisanAnalytics = () => {
           </CardContent>
         </Card>
         
-        {/* Seasonal Performance */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Regional Sales Performance</CardTitle>
+            <CardDescription>Sales and revenue by region</CardDescription>
+          </CardHeader>
+          <CardContent className="px-2">
+            {dataLoading ? (
+              <Skeleton className="h-[300px] w-full" />
+            ) : (
+              <ChartContainer config={chartConfig} className="h-[300px]">
+                <BarChart data={regionSalesData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis yAxisId="left" orientation="left" />
+                  <YAxis yAxisId="right" orientation="right" />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar yAxisId="left" dataKey="sales" name="sales" fill="var(--color-sales)" />
+                  <Bar yAxisId="right" dataKey="revenue" name="revenue" fill="var(--color-revenue)" />
+                  <ChartLegend />
+                </BarChart>
+              </ChartContainer>
+            )}
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Sales Channel Distribution</CardTitle>
+            <CardDescription>Breakdown of sales by channel</CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center">
+            {dataLoading ? (
+              <Skeleton className="h-[300px] w-[300px]" />
+            ) : (
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={salesChannelData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={90}
+                      fill="#8884d8"
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {salesChannelData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value, name, props) => [`${value}%`, name]} />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        
         <Card>
           <CardHeader>
             <CardTitle>Seasonal Performance</CardTitle>
@@ -566,7 +838,6 @@ const ArtisanAnalytics = () => {
           </CardContent>
         </Card>
         
-        {/* Top Products by Revenue */}
         <Card>
           <CardHeader>
             <CardTitle>Top Products by Revenue</CardTitle>
