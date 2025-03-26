@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { Label } from "@/components/ui/label";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email({
@@ -20,15 +21,36 @@ const forgotPasswordSchema = z.object({
 
 type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
 
+// Schema for the new password step
+const newPasswordSchema = z.object({
+  password: z.string().min(8, { 
+    message: "Password must be at least 8 characters." 
+  }),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+type NewPasswordValues = z.infer<typeof newPasswordSchema>;
+
 const ForgotPassword = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [step, setStep] = React.useState<'email' | 'verification' | 'newPassword'>('email');
   
-  const form = useForm<ForgotPasswordValues>({
+  const emailForm = useForm<ForgotPasswordValues>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
       email: "",
+    },
+  });
+
+  const passwordForm = useForm<NewPasswordValues>({
+    resolver: zodResolver(newPasswordSchema),
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
     },
   });
 
@@ -57,7 +79,7 @@ const ForgotPassword = () => {
     setStep('newPassword');
   };
 
-  const onSubmitNewPassword = (values: { password: string, confirmPassword: string }) => {
+  const onSubmitNewPassword = (values: NewPasswordValues) => {
     console.log("New password:", values);
     
     toast({
@@ -88,10 +110,10 @@ const ForgotPassword = () => {
 
           <div className="bg-white shadow-sm rounded-lg p-6 border border-artisan-sand/50">
             {step === 'email' && (
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmitEmail)} className="space-y-4">
+              <Form {...emailForm}>
+                <form onSubmit={emailForm.handleSubmit(onSubmitEmail)} className="space-y-4">
                   <FormField
-                    control={form.control}
+                    control={emailForm.control}
                     name="email"
                     render={({ field }) => (
                       <FormItem>
@@ -123,7 +145,7 @@ const ForgotPassword = () => {
             {step === 'verification' && (
               <div className="space-y-4">
                 <div className="mb-6">
-                  <FormLabel className="block mb-2">Verification Code</FormLabel>
+                  <Label className="block mb-2">Verification Code</Label>
                   <InputOTP maxLength={6} onComplete={onSubmitVerification}>
                     <InputOTPGroup>
                       <InputOTPSlot index={0} />
@@ -153,48 +175,54 @@ const ForgotPassword = () => {
             )}
             
             {step === 'newPassword' && (
-              <form 
-                className="space-y-4"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const formData = new FormData(e.currentTarget);
-                  const password = formData.get('password') as string;
-                  const confirmPassword = formData.get('confirmPassword') as string;
-                  onSubmitNewPassword({ password, confirmPassword });
-                }}
-              >
-                <div>
-                  <FormLabel htmlFor="password" className="block mb-2">New Password</FormLabel>
-                  <Input 
-                    id="password" 
+              <Form {...passwordForm}>
+                <form 
+                  onSubmit={passwordForm.handleSubmit(onSubmitNewPassword)}
+                  className="space-y-4"
+                >
+                  <FormField
+                    control={passwordForm.control}
                     name="password"
-                    type="password" 
-                    placeholder="Create a new password" 
-                    className="w-full"
-                    required
-                    minLength={8}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>New Password</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="password" 
+                            placeholder="Create a new password" 
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                
-                <div>
-                  <FormLabel htmlFor="confirmPassword" className="block mb-2">Confirm Password</FormLabel>
-                  <Input 
-                    id="confirmPassword" 
+                  
+                  <FormField
+                    control={passwordForm.control}
                     name="confirmPassword"
-                    type="password" 
-                    placeholder="Confirm your new password" 
-                    className="w-full"
-                    required
-                    minLength={8}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Confirm Password</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="password" 
+                            placeholder="Confirm your new password" 
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                
-                <div className="pt-2">
-                  <Button type="submit" className="w-full bg-artisan-stone hover:bg-artisan-forest">
-                    Reset Password
-                  </Button>
-                </div>
-              </form>
+                  
+                  <div className="pt-2">
+                    <Button type="submit" className="w-full bg-artisan-stone hover:bg-artisan-forest">
+                      Reset Password
+                    </Button>
+                  </div>
+                </form>
+              </Form>
             )}
           </div>
         </div>
