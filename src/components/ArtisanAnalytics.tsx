@@ -232,6 +232,50 @@ const chartConfig = {
   },
 };
 
+const CustomizedTreemapContent = (props) => {
+  const { root, depth, x, y, width, height, index, payload, colors, rank, name } = props;
+
+  return (
+    <g>
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        style={{
+          fill: COLORS[index % COLORS.length],
+          stroke: '#fff',
+          strokeWidth: 2 / (depth + 1e-10),
+          strokeOpacity: 1 / (depth + 1e-10),
+        }}
+      />
+      {width > 30 && height > 30 && (
+        <text
+          x={x + width / 2}
+          y={y + height / 2 + 7}
+          textAnchor="middle"
+          fill="#fff"
+          fontSize={12}
+        >
+          {payload.name}
+        </text>
+      )}
+      {width > 30 && height > 30 && (
+        <text
+          x={x + width / 2}
+          y={y + height / 2 - 7}
+          textAnchor="middle"
+          fill="#fff"
+          fontSize={14}
+          fontWeight="bold"
+        >
+          ₱{payload.revenue.toLocaleString()}
+        </text>
+      )}
+    </g>
+  );
+};
+
 const ArtisanAnalytics = () => {
   const [analyticView, setAnalyticView] = useState("overview");
   const [dataLoading, setDataLoading] = useState(false);
@@ -468,47 +512,7 @@ const ArtisanAnalytics = () => {
                     ratio={4/3}
                     stroke="#fff"
                     fill="#8884d8"
-                    content={({ root, depth, x, y, width, height, index, payload, colors, rank, name }) => {
-                      return (
-                        <g>
-                          <rect
-                            x={x}
-                            y={y}
-                            width={width}
-                            height={height}
-                            style={{
-                              fill: COLORS[index % COLORS.length],
-                              stroke: '#fff',
-                              strokeWidth: 2 / (depth + 1e-10),
-                              strokeOpacity: 1 / (depth + 1e-10),
-                            }}
-                          />
-                          {width > 30 && height > 30 && (
-                            <text
-                              x={x + width / 2}
-                              y={y + height / 2 + 7}
-                              textAnchor="middle"
-                              fill="#fff"
-                              fontSize={12}
-                            >
-                              {payload.name}
-                            </text>
-                          )}
-                          {width > 30 && height > 30 && (
-                            <text
-                              x={x + width / 2}
-                              y={y + height / 2 - 7}
-                              textAnchor="middle"
-                              fill="#fff"
-                              fontSize={14}
-                              fontWeight="bold"
-                            >
-                              ₱{payload.revenue.toLocaleString()}
-                            </text>
-                          )}
-                        </g>
-                      );
-                    }}
+                    content={<CustomizedTreemapContent />}
                   />
                 </ResponsiveContainer>
               </div>
