@@ -232,8 +232,8 @@ const chartConfig = {
   },
 };
 
-const CustomizedTreemapContent = (props) => {
-  const { root, depth, x, y, width, height, index, payload, colors, rank, name } = props;
+const CustomizedTreemapContent = (props: any) => {
+  const { x, y, width, height, index, depth, payload } = props;
 
   return (
     <g>
@@ -509,7 +509,6 @@ const ArtisanAnalytics = () => {
                   <Treemap
                     data={productSalesData}
                     dataKey="revenue"
-                    ratio={4/3}
                     stroke="#fff"
                     fill="#8884d8"
                     content={<CustomizedTreemapContent />}
