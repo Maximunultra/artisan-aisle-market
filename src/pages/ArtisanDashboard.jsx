@@ -17,7 +17,7 @@ const ArtisanDashboard = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow pt-20 pb-12">
-        <div className="artisan-container">
+        <div className="container mx-auto px-4">
           <div className="my-12">
             <h1 className="text-4xl md:text-5xl font-serif mb-4">Artisan Dashboard</h1>
             <p className="text-muted-foreground max-w-2xl">
