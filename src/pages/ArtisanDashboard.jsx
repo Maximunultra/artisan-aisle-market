@@ -1,14 +1,14 @@
 
 import React, { useState } from 'react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Package, Users, CreditCard, Megaphone, BarChart } from 'lucide-react';
-import ArtisanProducts from '@/components/ArtisanProducts';
-import ArtisanPromotions from '@/components/ArtisanPromotions';
-import ArtisanMessages from '@/components/ArtisanMessages';
-import ArtisanOrders from '@/components/ArtisanOrders';
-import ArtisanAnalytics from '@/components/ArtisanAnalytics'; 
+import ArtisanProducts from '../components/ArtisanProducts';
+import ArtisanPromotions from '../components/ArtisanPromotions';
+import ArtisanMessages from '../components/ArtisanMessages';
+import ArtisanOrders from '../components/ArtisanOrders';
+import ArtisanAnalytics from '../components/ArtisanAnalytics'; 
 
 const ArtisanDashboard = () => {
   const [activeTab, setActiveTab] = useState("products");
@@ -17,7 +17,7 @@ const ArtisanDashboard = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow pt-20 pb-12">
-        <div className="container mx-auto px-4">
+        <div className="artisan-container">
           <div className="my-12">
             <h1 className="text-4xl md:text-5xl font-serif mb-4">Artisan Dashboard</h1>
             <p className="text-muted-foreground max-w-2xl">
