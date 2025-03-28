@@ -1,22 +1,23 @@
 
-export interface EcoRequest {
-  id: number;
-  productName: string;
-  artisanName: string;
-  artisanId: number;
-  materials: string;
-  description: string;
-  certifications: string;
-  status: 'pending' | 'approved' | 'rejected';
-  submittedDate: string;
-  imageUrl: string;
-  approvedDate?: string;
-  rejectedDate?: string;
-  rejectionReason?: string;
-}
+/**
+ * @typedef {Object} EcoRequest
+ * @property {number} id
+ * @property {string} productName
+ * @property {string} artisanName
+ * @property {number} artisanId
+ * @property {string} materials
+ * @property {string} description
+ * @property {string} certifications
+ * @property {'pending' | 'approved' | 'rejected'} status
+ * @property {string} submittedDate
+ * @property {string} imageUrl
+ * @property {string} [approvedDate]
+ * @property {string} [rejectedDate]
+ * @property {string} [rejectionReason]
+ */
 
 // Sample eco-friendly product requests
-export const SAMPLE_ECO_REQUESTS: EcoRequest[] = [
+export const SAMPLE_ECO_REQUESTS = [
   {
     id: 1,
     productName: "Hand-woven Abaca Bag",

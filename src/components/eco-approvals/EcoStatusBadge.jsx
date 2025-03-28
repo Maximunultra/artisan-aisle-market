@@ -2,11 +2,11 @@
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 
-interface EcoStatusBadgeProps {
-  status: 'pending' | 'approved' | 'rejected';
-}
-
-export const EcoStatusBadge = ({ status }: EcoStatusBadgeProps) => {
+/**
+ * @param {Object} props
+ * @param {'pending' | 'approved' | 'rejected'} props.status
+ */
+export const EcoStatusBadge = ({ status }) => {
   switch(status) {
     case 'approved':
       return <Badge variant="default" className="bg-green-500">Approved</Badge>;

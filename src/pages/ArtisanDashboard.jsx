@@ -8,7 +8,7 @@ import ArtisanProducts from '@/components/ArtisanProducts';
 import ArtisanPromotions from '@/components/ArtisanPromotions';
 import ArtisanMessages from '@/components/ArtisanMessages';
 import ArtisanOrders from '@/components/ArtisanOrders';
-import ArtisanAnalytics from '@/components/ArtisanAnalytics'; // This now points to the .jsx file
+import ArtisanAnalytics from '@/components/ArtisanAnalytics'; 
 
 const ArtisanDashboard = () => {
   const [activeTab, setActiveTab] = useState("products");

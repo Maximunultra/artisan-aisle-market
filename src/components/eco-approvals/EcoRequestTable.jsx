@@ -6,16 +6,15 @@ import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { EcoStatusBadge } from "@/components/eco-approvals/EcoStatusBadge";
 import { EcoRequestViewSheet } from "@/components/eco-approvals/EcoRequestViewSheet";
 import { EcoRejectSheet } from "@/components/eco-approvals/EcoRejectSheet";
-import { EcoRequest } from "@/types/EcoRequest";
 
-interface EcoRequestTableProps {
-  requests: EcoRequest[];
-  onApprove: (id: number) => void;
-  onReject: (id: number, reason: string) => void;
-  onSelectRequest: (request: EcoRequest) => void;
-}
-
-export const EcoRequestTable = ({ requests, onApprove, onReject, onSelectRequest }: EcoRequestTableProps) => {
+/**
+ * @param {Object} props
+ * @param {import('../../types/EcoRequest').EcoRequest[]} props.requests
+ * @param {(id: number) => void} props.onApprove
+ * @param {(id: number, reason: string) => void} props.onReject
+ * @param {(request: import('../../types/EcoRequest').EcoRequest) => void} props.onSelectRequest
+ */
+export const EcoRequestTable = ({ requests, onApprove, onReject, onSelectRequest }) => {
   return (
     <div className="bg-white rounded-md shadow-sm">
       <Table>

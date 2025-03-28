@@ -5,21 +5,20 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Eye } from 'lucide-react';
 import { EcoRequestDetails } from "@/components/eco-approvals/EcoRequestDetails";
 import { EcoApprovalActions } from "@/components/eco-approvals/EcoApprovalActions";
-import { EcoRequest } from "@/types/EcoRequest";
 
-interface EcoRequestViewSheetProps {
-  request: EcoRequest;
-  onApprove: (id: number) => void;
-  onReject: (id: number, reason: string) => void;
-  onOpen?: (request: EcoRequest) => void;
-}
-
+/**
+ * @param {Object} props
+ * @param {import('../../types/EcoRequest').EcoRequest} props.request
+ * @param {(id: number) => void} props.onApprove
+ * @param {(id: number, reason: string) => void} props.onReject
+ * @param {(request: import('../../types/EcoRequest').EcoRequest) => void} [props.onOpen]
+ */
 export const EcoRequestViewSheet = ({ 
   request, 
   onApprove, 
   onReject,
   onOpen
-}: EcoRequestViewSheetProps) => {
+}) => {
   return (
     <Sheet>
       <SheetTrigger asChild>

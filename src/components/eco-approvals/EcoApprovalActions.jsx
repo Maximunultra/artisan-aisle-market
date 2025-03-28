@@ -4,15 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle2, XCircle } from 'lucide-react';
-import { EcoRequest } from "@/types/EcoRequest";
 
-interface EcoApprovalActionsProps {
-  request: EcoRequest;
-  onApprove: (id: number) => void;
-  onReject: (id: number, reason: string) => void;
-}
-
-export const EcoApprovalActions = ({ request, onApprove, onReject }: EcoApprovalActionsProps) => {
+/**
+ * @param {Object} props
+ * @param {import('../../types/EcoRequest').EcoRequest} props.request
+ * @param {(id: number) => void} props.onApprove
+ * @param {(id: number, reason: string) => void} props.onReject
+ */
+export const EcoApprovalActions = ({ request, onApprove, onReject }) => {
   const [rejectionReason, setRejectionReason] = useState('');
 
   return (

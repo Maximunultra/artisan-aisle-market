@@ -5,14 +5,13 @@ import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { XCircle } from 'lucide-react';
-import { EcoRequest } from "@/types/EcoRequest";
 
-interface EcoRejectSheetProps {
-  request: EcoRequest;
-  onReject: (id: number, reason: string) => void;
-}
-
-export const EcoRejectSheet = ({ request, onReject }: EcoRejectSheetProps) => {
+/**
+ * @param {Object} props
+ * @param {import('../../types/EcoRequest').EcoRequest} props.request
+ * @param {(id: number, reason: string) => void} props.onReject
+ */
+export const EcoRejectSheet = ({ request, onReject }) => {
   const [rejectionReason, setRejectionReason] = useState('');
 
   return (

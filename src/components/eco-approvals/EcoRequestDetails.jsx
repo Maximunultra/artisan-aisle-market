@@ -2,13 +2,12 @@
 import React from 'react';
 import { Label } from "@/components/ui/label";
 import { EcoStatusBadge } from "@/components/eco-approvals/EcoStatusBadge";
-import { EcoRequest } from "@/types/EcoRequest";
 
-interface EcoRequestDetailsProps {
-  request: EcoRequest;
-}
-
-export const EcoRequestDetails = ({ request }: EcoRequestDetailsProps) => {
+/**
+ * @param {Object} props
+ * @param {import('../../types/EcoRequest').EcoRequest} props.request
+ */
+export const EcoRequestDetails = ({ request }) => {
   return (
     <div className="space-y-4">
       <div className="aspect-square max-w-sm mx-auto mb-4 rounded-md overflow-hidden">
