@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { AdminArtisanMonitoring } from "@/components/AdminArtisanMonitoring";
 import { AdminCustomerMonitoring } from "@/components/AdminCustomerMonitoring";
 import { AdminEcoFriendlyApprovals } from "@/components/AdminEcoFriendlyApprovals";
-import { AdminAnalytics } from "@/components/AdminAnalytics";
+import AdminAnalytics from "@/components/AdminAnalytics";
 import { BarChart, Users, BadgeCheck, LineChart } from 'lucide-react';
 
 const AdminDashboard = () => {
