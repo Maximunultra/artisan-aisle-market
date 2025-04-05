@@ -7,9 +7,8 @@ import {
   productCategoryData, 
   ecoRequestsData,
   summaryMetrics,
-  COLORS
 } from '../utils/adminAnalyticsData';
-import { chartConfig } from '../utils/chartConfigs';
+import { chartConfig, CHART_COLORS } from '../utils/chartConfigs';
 import SummaryCards from './analytics/SummaryCards';
 import SalesChart from './analytics/SalesChart';
 import UserGrowthChart from './analytics/UserGrowthChart';
@@ -48,7 +47,7 @@ const AdminAnalytics = () => {
         <UserGrowthChart data={userGrowthData} config={chartConfig.users} />
 
         {/* Product Categories */}
-        <ProductCategoriesChart data={productCategoryData} colors={COLORS} />
+        <ProductCategoriesChart data={productCategoryData} colors={CHART_COLORS} />
 
         {/* Eco Request Trends */}
         <EcoRequestsChart data={ecoRequestsData} config={chartConfig.ecoRequests} />
