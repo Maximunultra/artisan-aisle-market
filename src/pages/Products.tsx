@@ -4,9 +4,27 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Chatbot from '@/components/Chatbot';
 import { Button } from "@/components/ui/button";
-import { Search, ShoppingCart, Filter, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import { 
+  Search, 
+  ShoppingCart, 
+  Filter, 
+  SlidersHorizontal, 
+  ChevronDown,
+  Info,
+  X
+} from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { CartItem } from "@/types/CartItem";
+import { useNavigate } from 'react-router-dom';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 
 // Sample products data (expanded)
 const products = [
@@ -140,7 +158,10 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("featured");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   // Filter and sort products
   const filteredProducts = products
@@ -200,6 +221,20 @@ const Products = () => {
       title: "Added to cart",
       description: `${product.name} has been added to your cart.`,
     });
+  };
+
+  const handleViewProductDetails = (product: any) => {
+    setSelectedProduct(product);
+    setIsDrawerOpen(true);
+  };
+
+  const handleProceedToCheckout = () => {
+    // First add the selected product to cart
+    if (selectedProduct) {
+      addToCart(selectedProduct);
+    }
+    // Navigate to checkout page
+    navigate('/checkout');
   };
   
   return (
@@ -318,7 +353,8 @@ const Products = () => {
               {filteredProducts.map((product) => (
                 <div 
                   key={product.id}
-                  className="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-lift"
+                  className="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover-lift cursor-pointer"
+                  onClick={() => handleViewProductDetails(product)}
                 >
                   {/* Product Image */}
                   <div className="aspect-[4/5] overflow-hidden">
@@ -336,16 +372,27 @@ const Products = () => {
                     )}
                     
                     {/* Quick Actions Overlay */}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
                       <Button 
                         className="bg-white text-artisan-stone hover:bg-artisan-cream"
                         onClick={(e) => {
-                          e.preventDefault();
+                          e.stopPropagation();
                           addToCart(product);
                         }}
                       >
                         <ShoppingCart className="mr-2 h-4 w-4" />
                         Add to Cart
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        className="bg-white/80 border-artisan-stone text-artisan-stone hover:bg-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleViewProductDetails(product);
+                        }}
+                      >
+                        <Info className="mr-2 h-4 w-4" />
+                        View Details
                       </Button>
                     </div>
                   </div>
@@ -364,7 +411,13 @@ const Products = () => {
                       <span className="text-xs py-1 px-2 bg-artisan-sand/50 rounded-full">
                         {product.category}
                       </span>
-                      <button className="text-artisan-stone text-sm font-medium inline-flex items-center hover:text-artisan-accent transition-colors">
+                      <button 
+                        className="text-artisan-stone text-sm font-medium inline-flex items-center hover:text-artisan-accent transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleViewProductDetails(product);
+                        }}
+                      >
                         View Details
                         <ChevronDown className="ml-1 h-3 w-3" />
                       </button>
@@ -393,6 +446,112 @@ const Products = () => {
           )}
         </div>
       </main>
+
+      {/* Product Details Drawer */}
+      <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <DrawerContent className="max-h-[85vh] overflow-auto">
+          <DrawerHeader className="border-b">
+            <DrawerTitle className="text-2xl font-serif">{selectedProduct?.name}</DrawerTitle>
+            <DrawerDescription>By {selectedProduct?.artisan}</DrawerDescription>
+            <DrawerClose className="absolute right-4 top-4">
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </DrawerClose>
+          </DrawerHeader>
+          
+          {selectedProduct && (
+            <div className="px-4 py-6">
+              <div className="flex flex-col md:flex-row gap-8">
+                {/* Product Image */}
+                <div className="md:w-1/2">
+                  <div className="rounded-lg overflow-hidden">
+                    <img 
+                      src={selectedProduct.image} 
+                      alt={selectedProduct.name}
+                      className="w-full h-auto object-cover" 
+                    />
+                  </div>
+                  
+                  {/* Badges */}
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    <div className="bg-artisan-sand/50 text-artisan-stone px-3 py-1 rounded-full text-sm">
+                      {selectedProduct.category}
+                    </div>
+                    {selectedProduct.isEcoFriendly && (
+                      <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                        Eco-Friendly
+                      </div>
+                    )}
+                    {selectedProduct.featured && (
+                      <div className="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm">
+                        Featured
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Product Details */}
+                <div className="md:w-1/2">
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-medium">About this product</h3>
+                      <p className="mt-2 text-muted-foreground">
+                        This beautiful piece is handcrafted by {selectedProduct.artisan}, 
+                        showcasing traditional Filipino craftsmanship and artistry. 
+                        Each item is uniquely made with attention to detail and quality.
+                      </p>
+                    </div>
+                    
+                    <div className="border-t border-b py-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-lg">Price</span>
+                        <span className="text-2xl font-semibold text-artisan-accent">
+                          ₱{selectedProduct.price.toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className="text-sm font-medium mb-2">Key Features</h4>
+                      <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+                        <li>Handcrafted with care and attention to detail</li>
+                        <li>Made using traditional techniques</li>
+                        <li>Supports local Filipino artisans</li>
+                        {selectedProduct.isEcoFriendly && (
+                          <li>Made with sustainable and eco-friendly materials</li>
+                        )}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <DrawerFooter className="border-t pt-4">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button 
+                className="flex-1 bg-artisan-stone hover:bg-artisan-forest"
+                onClick={() => {
+                  if (selectedProduct) addToCart(selectedProduct);
+                  setIsDrawerOpen(false);
+                }}
+              >
+                <ShoppingCart className="mr-2 h-4 w-4" />
+                Add to Cart
+              </Button>
+              <Button 
+                variant="outline" 
+                className="flex-1 border-artisan-accent text-artisan-accent hover:bg-artisan-accent hover:text-white"
+                onClick={handleProceedToCheckout}
+              >
+                Proceed to Checkout
+              </Button>
+            </div>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+      
       <Footer />
       <Chatbot />
     </div>
