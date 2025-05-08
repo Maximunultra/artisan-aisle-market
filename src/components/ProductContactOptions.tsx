@@ -10,11 +10,12 @@ import {
   DialogFooter
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Mail, Phone, MessageCircle } from 'lucide-react';
+import { Mail, Phone, MessageSquare } from 'lucide-react';
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
+import { useNavigate } from 'react-router-dom';
 
 interface ProductContactOptionsProps {
   productName: string;
@@ -23,6 +24,7 @@ interface ProductContactOptionsProps {
 
 const ProductContactOptions: React.FC<ProductContactOptionsProps> = ({ productName, artisanName }) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [message, setMessage] = useState('');
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,6 +50,21 @@ const ProductContactOptions: React.FC<ProductContactOptionsProps> = ({ productNa
       setIsDialogOpen(false);
       setMessage('');
       setEmail('');
+      
+      // Ask if user wants to view their messages
+      toast({
+        title: "View your messages",
+        description: "Would you like to view your conversation?",
+        action: (
+          <Button 
+            variant="outline" 
+            onClick={() => navigate('/customer-messages')}
+            className="border-artisan-stone text-artisan-stone"
+          >
+            View Messages
+          </Button>
+        ),
+      });
     } catch (error) {
       // Show error toast
       toast({
@@ -60,6 +77,10 @@ const ProductContactOptions: React.FC<ProductContactOptionsProps> = ({ productNa
     }
   };
   
+  const goToMessaging = () => {
+    navigate('/customer-messages');
+  };
+  
   return (
     <div className="space-y-4 mt-6">
       <h3 className="text-lg font-medium">Contact About This Product</h3>
@@ -69,7 +90,7 @@ const ProductContactOptions: React.FC<ProductContactOptionsProps> = ({ productNa
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" className="w-full flex items-center justify-center gap-2 border-artisan-stone text-artisan-stone">
-              <MessageCircle className="h-4 w-4" />
+              <MessageSquare className="h-4 w-4" />
               <span>Direct Message</span>
             </Button>
           </DialogTrigger>
@@ -105,13 +126,22 @@ const ProductContactOptions: React.FC<ProductContactOptionsProps> = ({ productNa
                 />
               </div>
               
-              <DialogFooter className="sm:justify-start">
+              <DialogFooter className="sm:justify-start flex flex-wrap gap-2">
                 <Button 
                   type="submit" 
                   className="bg-artisan-stone hover:bg-artisan-forest"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? "Sending..." : "Send Message"}
+                </Button>
+                
+                <Button 
+                  type="button"
+                  variant="outline"
+                  className="border-artisan-stone text-artisan-stone"
+                  onClick={goToMessaging}
+                >
+                  Go to Messaging
                 </Button>
               </DialogFooter>
             </form>
