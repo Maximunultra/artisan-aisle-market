@@ -12,6 +12,7 @@ import NotFoundPage from './pages/NotFound';
 import DashboardPage from './pages/Dashboard';
 import ArtisanDashboard from './pages/ArtisanDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import ContactPage from './pages/Contact';
 import { Toaster } from "@/components/ui/toaster";
 import { useEffect } from 'react';
 import './App.css';
@@ -35,6 +36,7 @@ function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/artisan-dashboard" element={<ArtisanDashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <Toaster />

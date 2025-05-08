@@ -1,10 +1,18 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { ChevronRight, ShoppingCart, CreditCard } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
 import { CartItem } from "@/types/CartItem";
+import ProductContactOptions from './ProductContactOptions';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogClose
+} from "@/components/ui/dialog";
 
 // Sample product data
 const products = [
@@ -49,6 +57,8 @@ const FeaturedProducts = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   const filteredProducts = activeCategory === "All" 
     ? products 
@@ -92,6 +102,11 @@ const FeaturedProducts = () => {
     addToCart(product);
     // Navigate to checkout page
     navigate('/checkout');
+  };
+  
+  const handleViewDetails = (product: any) => {
+    setSelectedProduct(product);
+    setIsDialogOpen(true);
   };
   
   return (
@@ -187,6 +202,18 @@ const FeaturedProducts = () => {
                     Buy Now
                   </Button>
                 </div>
+
+                {/* Contact Seller Button */}
+                <Button
+                  variant="ghost"
+                  className="w-full mt-2 text-artisan-accent hover:text-artisan-accent/80"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleViewDetails(product);
+                  }}
+                >
+                  Contact Seller
+                </Button>
               </div>
             </div>
           ))}
@@ -202,6 +229,42 @@ const FeaturedProducts = () => {
           </Link>
         </div>
       </div>
+
+      {/* Product Details Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          {selectedProduct && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{selectedProduct.name}</DialogTitle>
+                <DialogDescription>By {selectedProduct.artisan}</DialogDescription>
+              </DialogHeader>
+              
+              <div className="py-4">
+                <div className="aspect-[4/3] mb-4 overflow-hidden rounded-md">
+                  <img 
+                    src={selectedProduct.image} 
+                    alt={selectedProduct.name}
+                    className="w-full h-full object-cover object-center"
+                  />
+                </div>
+                
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-sm py-1 px-2 bg-artisan-sand/50 rounded-full">
+                    {selectedProduct.category}
+                  </span>
+                  <span className="text-artisan-accent font-semibold">₱{selectedProduct.price.toLocaleString()}</span>
+                </div>
+                
+                <ProductContactOptions 
+                  productName={selectedProduct.name}
+                  artisanName={selectedProduct.artisan}
+                />
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

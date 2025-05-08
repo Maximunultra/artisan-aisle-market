@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -15,7 +14,8 @@ import {
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { CartItem } from "@/types/CartItem";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import ProductContactOptions from '@/components/ProductContactOptions';
 import {
   Drawer,
   DrawerClose,
@@ -522,6 +522,14 @@ const Products = () => {
                         )}
                       </ul>
                     </div>
+                    
+                    {/* Add Contact Options */}
+                    {selectedProduct && (
+                      <ProductContactOptions 
+                        productName={selectedProduct.name}
+                        artisanName={selectedProduct.artisan}
+                      />
+                    )}
                   </div>
                 </div>
               </div>
@@ -547,6 +555,14 @@ const Products = () => {
               >
                 Proceed to Checkout
               </Button>
+            </div>
+            
+            <div className="mt-3">
+              <Link to="/contact" className="w-full">
+                <Button variant="ghost" className="w-full text-muted-foreground">
+                  Contact Us For More Information
+                </Button>
+              </Link>
             </div>
           </DrawerFooter>
         </DrawerContent>
