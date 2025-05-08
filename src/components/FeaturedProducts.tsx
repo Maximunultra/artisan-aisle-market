@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { ChevronRight, ShoppingCart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ChevronRight, ShoppingCart, CreditCard } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
 import { CartItem } from "@/types/CartItem";
 
@@ -48,6 +48,7 @@ const categories = ["All", "Accessories", "Home Decor", "Kitchen", "Clothing"];
 const FeaturedProducts = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const filteredProducts = activeCategory === "All" 
     ? products 
@@ -84,6 +85,13 @@ const FeaturedProducts = () => {
       title: "Added to cart",
       description: `${product.name} has been added to your cart.`,
     });
+  };
+  
+  const buyNow = (product: any) => {
+    // Add item to cart first
+    addToCart(product);
+    // Navigate to checkout page
+    navigate('/checkout');
   };
   
   return (
@@ -133,20 +141,6 @@ const FeaturedProducts = () => {
                   alt={product.name} 
                   className="w-full h-full object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
                 />
-                
-                {/* Quick Actions Overlay */}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <Button 
-                    className="bg-white text-artisan-stone hover:bg-artisan-cream"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      addToCart(product);
-                    }}
-                  >
-                    <ShoppingCart className="mr-2 h-4 w-4" />
-                    Add to Cart
-                  </Button>
-                </div>
               </div>
               
               {/* Product Info */}
@@ -167,6 +161,31 @@ const FeaturedProducts = () => {
                     View Details
                     <ChevronRight className="ml-1 h-3 w-3" />
                   </Link>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <Button 
+                    variant="outline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      addToCart(product);
+                    }}
+                    className="w-full border-artisan-stone text-artisan-stone hover:bg-artisan-sand/50"
+                  >
+                    <ShoppingCart className="mr-1 h-4 w-4" />
+                    Add to Cart
+                  </Button>
+                  <Button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      buyNow(product);
+                    }}
+                    className="w-full bg-artisan-stone hover:bg-artisan-forest"
+                  >
+                    <CreditCard className="mr-1 h-4 w-4" />
+                    Buy Now
+                  </Button>
                 </div>
               </div>
             </div>
