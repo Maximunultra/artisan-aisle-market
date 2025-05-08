@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { ChevronRight, ShoppingCart, CreditCard } from 'lucide-react';
@@ -5,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
 import { CartItem } from "@/types/CartItem";
 import ProductContactOptions from './ProductContactOptions';
+import { Product } from '@/types/Product';
 import {
   Dialog,
   DialogContent,
@@ -15,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 
 // Sample product data
-const products = [
+const products: Product[] = [
   {
     id: 1,
     name: "Hand-woven Abaca Bag",
@@ -23,6 +25,7 @@ const products = [
     price: 1200,
     image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&q=80&w=600&h=700",
     artisan: "Maria Santos",
+    featured: true
   },
   {
     id: 2,
@@ -31,6 +34,7 @@ const products = [
     price: 1850,
     image: "https://images.unsplash.com/photo-1612196808214-b7e69439cdba?auto=format&fit=crop&q=80&w=600&h=700",
     artisan: "Pedro Reyes",
+    featured: true
   },
   {
     id: 3,
@@ -39,6 +43,7 @@ const products = [
     price: 1500,
     image: "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&q=80&w=600&h=700",
     artisan: "Juan Mendoza",
+    featured: true
   },
   {
     id: 4,
@@ -47,6 +52,7 @@ const products = [
     price: 2200,
     image: "https://images.unsplash.com/photo-1520299607509-dcd935f9a025?auto=format&fit=crop&q=80&w=600&h=700",
     artisan: "Elena Cruz",
+    featured: true
   }
 ];
 
@@ -57,7 +63,7 @@ const FeaturedProducts = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   const filteredProducts = activeCategory === "All" 
